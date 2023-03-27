@@ -1,27 +1,44 @@
-//your JS code here. If required.
-const promises = [];
+// Function to generate a random number between 1 and 10
+  function getRandomNumber() {
+    return Math.floor(Math.random() * 10) + 1;
+  }
 
-for (let i = 0; i < 5; i++) {
-  const promise = new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const randomNum = Math.random();
-      if (randomNum < 0.5) {
-        reject(`Promise ${i+1} rejected with error`);
-      } else {
-        resolve(Math.floor(Math.random() * 10) + 1);
-      }
-    }, Math.random() * 5000); // random delay between 0 and 5 seconds
-  });
-  promises.push(promise);
-}
-
-Promise.all(promises)
-  .then((results) => {
-    const outputDiv = document.getElementById('output');
-    results.forEach((result, i) => {
-      const p = document.createElement('p');
-      p.innerText = `${i+1}: ${result}`;
-      outputDiv.appendChild(p);
+  // Function to create a promise that resolves to a random number or rejects with an error
+  function createPromise() {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (Math.random() < 0.5) {
+          resolve(getRandomNumber());
+        } else {
+          reject(new Error('Promise rejected with error'));
+        }
+      }, 1000);
     });
-  })
-  .catch((error) => console.log(error));
+  }
+
+  // Create an array of 5 promises
+  const promises = [
+    createPromise(),
+    createPromise(),
+    createPromise(),
+    createPromise(),
+    createPromise()
+  ];
+
+  // Use Promise.all to wait for all promises to settle and log the results or errors
+  Promise.all(promises)
+    .then(results => {
+      results.forEach((result, index) => {
+        if (result instanceof Error) {
+          console.log(`Promise ${index + 1} rejected with error`);
+        } else {
+          const outputDiv = document.getElementById('output');
+          const p = document.createElement('p');
+          p.textContent = `Promise ${index + 1}: ${result}`;
+          outputDiv.appendChild(p);
+        }
+      });
+    })
+    .catch(error => {
+      console.log('Error:', error);
+    });
